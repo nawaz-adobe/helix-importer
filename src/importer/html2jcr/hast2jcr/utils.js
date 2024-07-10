@@ -140,7 +140,7 @@ export function createComponentTree() {
 }
 
 export function findFieldsById(componentModels, id) {
-  return componentModels.find((item) => item.id === id);
+  return componentModels?.find((item) => item.id === id)?.fields || [];
 }
 
 export function reduceModelContainer(modelDefinition) {
@@ -161,6 +161,7 @@ export function reduceModelContainer(modelDefinition) {
         }
       })
       .filter((field) => field !== null);
+    console.log(fields);
     return { ...item, fields };
   });
 }
