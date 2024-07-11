@@ -40,18 +40,6 @@ function findNameFilterById(componentDefinition, nameClass) {
   };
 }
 
-function findFilterById(filters, id) {
-  let filter = null;
-  filters.forEach((item) => {
-    if (item.id === id) {
-      if (item?.components?.length > 0) {
-        filter = item?.components[0];
-      }
-    }
-  });
-  return filter;
-}
-
 function encodeHtml(str) {
   /* eslint-disable no-param-reassign */
   str = str.replace(/<code>(.*?)<\/code>/gs, (match) => match.replace(/\n/g, '&#xa;'));
@@ -249,30 +237,31 @@ function extractProperties(node, id, ctx, mode) {
   return properties;
 }
 
-function getBlockItems(node, filter, ctx) {
-  if (!filter) {
+function getBlockItems(node, allowedComponents, ctx) {
+  if (!allowedComponents.length) {
     return undefined;
   }
-  const elements = [];
   const { pathMap, path, componentDefinition } = ctx;
-  const { name } = findNameFilterById(componentDefinition, filter);
   const rows = node.children.filter((child) => child.type === 'element' && child.tagName === 'div');
-  for (let i = 0; i < rows.length; i += 1) {
+  return rows.map((row, i) => {
     const itemPath = `${path}/item${i + 1}`;
     pathMap.set(rows[i], itemPath);
-    const properties = extractProperties(rows[i], filter, ctx, 'blockItem');
-    elements.push({
-      type: 'element',
-      name: i > 0 ? `item_${i - 1}` : 'item',
-      attributes: {
-        'jcr:primaryType': 'nt:unstructured',
-        'sling:resourceType': 'core/franklin/components/block/v1/block/item',
-        name,
-        ...properties,
-      },
+    const parsedComponents = allowedComponents.map((childComponentId) => {
+      const { name, model } = findNameFilterById(componentDefinition, childComponentId);
+      const properties = extractProperties(rows[i], model, ctx, 'blockItem');
+      return {
+        type: 'element',
+        name: i > 0 ? `item_${i - 1}` : 'item',
+        attributes: {
+          'jcr:primaryType': 'nt:unstructured',
+          'sling:resourceType': 'core/franklin/components/block/v1/block/item',
+          name,
+          ...properties,
+        },
+      };
     });
-  }
-  return elements;
+    return parsedComponents[0];
+  });
 }
 
 function generateProperties(node, ctx) {
@@ -290,9 +279,9 @@ function generateProperties(node, ctx) {
   const {
     name, model, filterId, keyValue,
   } = findNameFilterById(componentDefinition, nameClass);
-  const filter = findFilterById(filters, filterId);
+  const allowedComponents = filters.find((item) => item.id === filterId)?.components || [];
   const attributes = extractProperties(node, model, ctx, keyValue ? 'keyValue' : 'simple');
-  const blockItems = getBlockItems(node, filter, ctx);
+  const blockItems = getBlockItems(node, allowedComponents, ctx);
   const properties = {
     name,
     filter: filterId,
