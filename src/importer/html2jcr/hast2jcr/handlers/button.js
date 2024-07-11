@@ -57,6 +57,7 @@ const button = {
         }
       }
     }
+    if (node.tagName === 'a') return true;
     return false;
   },
   getAttributes: (node) => {
