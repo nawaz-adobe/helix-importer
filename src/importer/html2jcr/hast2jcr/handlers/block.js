@@ -295,7 +295,7 @@ function generateProperties(node, ctx) {
   const blockItems = getBlockItems(node, filter, ctx);
   const properties = {
     name,
-    filter,
+    filter: filterId,
     ...attributes,
   };
 
