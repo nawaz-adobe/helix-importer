@@ -161,7 +161,7 @@ export function reduceModelContainer(modelDefinition) {
         }
       })
       .filter((field) => field !== null);
-    console.log(fields);
+
     return { ...item, fields };
   });
 }
