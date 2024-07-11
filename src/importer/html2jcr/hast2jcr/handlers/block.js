@@ -136,6 +136,8 @@ function findFieldByType(handler, groupFields, fields, idx) {
       || (field.component === 'richtext' && handler.name === 'text')
       || (field.component === 'multiselect' && handler.name === 'text')
       || (field.component === 'aem-content' && handler.name === 'button')
+      || (field.component === 'reference' && handler.name === 'button')
+      || (field.component === 'text' && handler.name === 'button')
       || (field.component === 'reference' && handler.name === 'image')) {
       groupField = field;
       if (field.component === 'richtext' && handler.name === 'text') {
