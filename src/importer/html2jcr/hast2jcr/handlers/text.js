@@ -71,6 +71,7 @@ const text = {
       insertComponent(parent, nodeName, component);
     }
   },
+  leaf: true,
 };
 
 export default text;

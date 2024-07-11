@@ -22,6 +22,7 @@ const title = {
     'jcr:title': encodeHTMLEntities(getText(node)),
     type: node.tagName,
   }),
+  leaf: true,
 };
 
 export default title;

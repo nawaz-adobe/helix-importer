@@ -313,6 +313,7 @@ function use(node, parents) {
 const block = {
   use,
   getAttributes,
+  leaf: true,
 };
 
 export default block;

@@ -70,6 +70,7 @@ const button = {
       title,
     };
   },
+  leaf: true,
 };
 
 export default button;
