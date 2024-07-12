@@ -217,8 +217,22 @@ function extractProperties(node, id, ctx, mode) {
         properties[field.name] = value;
       }
     } else if (field?.component === 'richtext') {
-      const selector = mode === 'blockItem' ? 'div > *' : 'div > div > * ';
-      properties[field.name] = encodeHtml(toHtml(selectAll(selector, children[idx])).trim());
+      const selector = mode === 'blockItem' ? ':scope > *' : ':scope > div > * ';
+      let selection = selectAll(selector, children[idx]);
+      if (selection.length === 0) {
+        // if there is just a single paragraph, it is just text, not in a <p>
+        const parentSelector = mode === 'blockItem' ? ':scope' : ':scope > div';
+        const containers = selectAll(parentSelector, children[idx]);
+        if (containers[0]?.children[0]?.type === 'text') {
+          selection = [{
+            type: 'element',
+            tagName: 'p',
+            properties: {},
+            children: containers[0].children,
+          }];
+        }
+      }
+      properties[field.name] = encodeHtml(toHtml(selection).trim());
     } else if (field?.component === 'image' || field?.component === 'reference') {
       const imageNode = select('img', children[idx]);
       if (imageNode) {
