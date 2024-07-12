@@ -9,6 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+/* eslint-disable no-use-before-define */
+
 import { select, selectAll } from 'hast-util-select';
 import { toString } from 'hast-util-to-string';
 import { toHtml } from 'hast-util-to-html';
@@ -123,22 +125,36 @@ function createComponentGroups(fields) {
 }
 
 function isHeadlineField(field, fields) {
-  return field.component === 'text' && fields.find((f) => f.name === `${field.name}Type`);
+  if (field.component === 'text') {
+    const typeField = fields.find((f) => f.name === `${field.name}Type`);
+    if (typeField && typeField.options?.length) {
+      // verify that the options only allow heading types to be sure its a title field and not a
+      // link field
+      const hasNoneHeadingOption = typeField.options.some((option) => !option.value.match(/h[1-6]/));
+      return !hasNoneHeadingOption;
+    }
+  }
+  return false;
 }
 
 function isLinkField(field, fields) {
   // any text field or a any field that has a Text subfield can be a link
-  return field.component === 'text' || fields.find((f) => f.name === `${field.name}Text`);
+  // but is not heading field
+  return (field.component === 'text' || fields.find((f) => f.name === `${field.name}Text`))
+    && !isHeadlineField(field, fields);
 }
 
 function isImageField(field, fields) {
   // a reference field is usually an image, cusotm fields may as well but need the MimeType subfield
-  return field.component === 'reference' || fields.find((f) => f.name === `${field.name}MimeType`);
+  return (field.component === 'reference' || fields.find((f) => f.name === `${field.name}MimeType`))
+    && !isLinkField(field, fields)
+    && !isHeadlineField(field);
 }
 
 function findFieldByType(handler, groupFields, fields, idx) {
   let groupField = null;
   let gIdx = idx;
+
   for (let index = gIdx; index < groupFields.length; index += 1) {
     const field = groupFields[index];
     if ((field.component === handler.name && !isHeadlineField(field, fields))
