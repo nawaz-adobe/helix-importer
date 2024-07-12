@@ -48,7 +48,7 @@ describe('MD to JCR converter', () => {
   it('converts a block with key-value pairs', async () => {
     await test('key-value');
   });
-  it.only('converts a block with code', async () => {
+  it('converts a block with code', async () => {
     await test('code');
   });
 });
