@@ -277,7 +277,7 @@
         "options" : [
           { "name": "Default", "value": "default" },
           { "name": "Primary", "value": "primary" },
-          { "name": "Secondary", "value": "secondary" }          
+          { "name": "Secondary", "value": "secondary" }
         ]
       },
       {
@@ -360,7 +360,7 @@
         "options" : [
           { "name": "Default", "value": "default" },
           { "name": "Primary", "value": "primary" },
-          { "name": "Secondary", "value": "secondary" }          
+          { "name": "Secondary", "value": "secondary" }
         ]
       },
       {
@@ -390,7 +390,7 @@
         "options" : [
           { "name": "Default", "value": "default" },
           { "name": "Primary", "value": "primary" },
-          { "name": "Secondary", "value": "secondary" }          
+          { "name": "Secondary", "value": "secondary" }
         ]
       },
       {
@@ -457,7 +457,7 @@
         "options" : [
           { "name": "Default", "value": "default" },
           { "name": "Primary", "value": "primary" },
-          { "name": "Secondary", "value": "secondary" }          
+          { "name": "Secondary", "value": "secondary" }
         ]
       },
       {

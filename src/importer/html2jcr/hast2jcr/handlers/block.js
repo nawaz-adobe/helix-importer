@@ -69,6 +69,9 @@ function collapseField(id, fields, node, properties = {}) {
         } else {
           properties[field.name] = encodeHTMLEntities(select('a', node)?.properties?.[suffix.toLowerCase()]);
         }
+      } else if (suffix === 'MimeType') {
+        // TODO: can we guess the mime type from the src?
+        properties[field.name] = 'image/unknown';
       } else {
         properties[field.name] = encodeHTMLEntities(node?.properties?.[suffix.toLowerCase()]);
       }
