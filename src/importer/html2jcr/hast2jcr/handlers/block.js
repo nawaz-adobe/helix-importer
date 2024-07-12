@@ -270,7 +270,7 @@ function getBlockItems(node, allowedComponents, ctx) {
         },
       };
     });
-    return parsedComponents[0];
+    return parsedComponents.sort((a, b) => Object.entries(b).length - Object.entries(a).length)[0];
   });
 }
 
