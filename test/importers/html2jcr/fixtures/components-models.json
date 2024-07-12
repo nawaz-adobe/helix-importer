@@ -430,7 +430,7 @@
     "id": "image-grouping",
     "fields": [
       {
-        "component": "reference",
+        "component": "custom-asset-picker:reference",
         "name": "teaser_image",
         "label": "Image",
         "value": "",
@@ -441,6 +441,12 @@
         "label": "Alt",
         "name": "teaser_imageAlt",
         "value": "",
+        "valueType": "string"
+      },
+
+      {
+        "component": "custom-asset-picker:mimeType",
+        "name": "teaser_imageMimeType",
         "valueType": "string"
       },
       {
