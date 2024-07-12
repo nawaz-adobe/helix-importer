@@ -133,28 +133,21 @@ function createComponentGroups(fields) {
 function isHeadlineField(field, fields) {
   if (field.component === 'text') {
     const typeField = fields.find((f) => f.name === `${field.name}Type`);
-    if (typeField && typeField.options?.length) {
-      // verify that the options only allow heading types to be sure its a title field and not a
-      // link field
-      const hasNoneHeadingOption = typeField.options.some((option) => !option.value.match(/h[1-6]/));
-      return !hasNoneHeadingOption;
-    }
+    const textField = fields.find((f) => f.name === `${field.name}Text`);
+    return typeField && !textField; // that would otherwise be a link
   }
   return false;
 }
 
 function isLinkField(field, fields) {
   // any text field or a any field that has a Text subfield can be a link
-  // but is not heading field
-  return (field.component === 'text' || fields.find((f) => f.name === `${field.name}Text`))
-    && !isHeadlineField(field, fields);
+  // TODO: actually any field can be a link but we have to start somewhere
+  return field.component === 'text' || fields.find((f) => f.name === `${field.name}Text`);
 }
 
 function isImageField(field, fields) {
   // a reference field is usually an image, cusotm fields may as well but need the MimeType subfield
-  return (field.component === 'reference' || fields.find((f) => f.name === `${field.name}MimeType`))
-    && !isLinkField(field, fields)
-    && !isHeadlineField(field);
+  return field.component === 'reference' || fields.find((f) => f.name === `${field.name}MimeType`);
 }
 
 function extractGroupProperties(node, group, elements, properties, ctx) {
