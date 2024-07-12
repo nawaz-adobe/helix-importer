@@ -122,8 +122,18 @@ function createComponentGroups(fields) {
   return components;
 }
 
-function isHeadline(field, fields) {
+function isHeadlineField(field, fields) {
   return field.component === 'text' && fields.find((f) => f.name === `${field.name}Type`);
+}
+
+function isLinkField(field, fields) {
+  // any text field or a any field that has a Text subfield can be a link
+  return field.component === 'text' || fields.find((f) => f.name === `${field.name}Text`);
+}
+
+function isImageField(field, fields) {
+  // a reference field is usually an image, cusotm fields may as well but need the MimeType subfield
+  return field.component === 'reference' || fields.find((f) => f.name === `${field.name}MimeType`);
 }
 
 function findFieldByType(handler, groupFields, fields, idx) {
@@ -131,14 +141,12 @@ function findFieldByType(handler, groupFields, fields, idx) {
   let gIdx = idx;
   for (let index = gIdx; index < groupFields.length; index += 1) {
     const field = groupFields[index];
-    if ((field.component === handler.name && !isHeadline(field, fields))
-      || (isHeadline(field, fields) && handler.name === 'title')
+    if ((field.component === handler.name && !isHeadlineField(field, fields))
+      || (isHeadlineField(field, fields) && handler.name === 'title')
       || (field.component === 'richtext' && handler.name === 'text')
       || (field.component === 'multiselect' && handler.name === 'text')
-      || (field.component === 'aem-content' && handler.name === 'button')
-      || (field.component === 'reference' && handler.name === 'button')
-      || (field.component === 'text' && handler.name === 'button')
-      || (field.component === 'reference' && handler.name === 'image')) {
+      || (isLinkField(field, fields) && handler.name === 'button')
+      || (isImageField(field, fields) && handler.name === 'image')) {
       groupField = field;
       if (field.component === 'richtext' && handler.name === 'text') {
         gIdx = index;
