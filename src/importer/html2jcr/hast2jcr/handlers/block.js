@@ -242,14 +242,9 @@ function extractProperties(node, id, ctx, mode) {
   const properties = {};
   const { componentModels } = ctx;
   const fields = createComponentGroups(findFieldsById(componentModels, id));
-  if (!fields) {
-    return properties;
-  }
   const mainFields = getMainFields(fields);
   mainFields.forEach((field, idx) => {
-    if (children.length <= idx) {
-      return;
-    }
+    if (children.length <= idx) return;
     if (field.component === 'group') {
       const selector = mode === 'blockItem' ? ':scope' : 'div > div';
       const containerNode = select(selector, children[idx]);
