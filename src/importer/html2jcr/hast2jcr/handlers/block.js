@@ -107,9 +107,6 @@ function getMainFields(fields) {
 
 function createComponentGroups(fields) {
   const components = [];
-  if (!fields) {
-    return components;
-  }
   fields.forEach((obj) => {
     if (obj.name.includes('_')) {
       const groupName = obj.name.split('_')[0];
