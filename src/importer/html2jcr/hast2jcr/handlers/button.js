@@ -48,7 +48,7 @@ function getLink(node) {
 
 const button = {
   use: (node) => {
-    if (node.tagName === 'p') {
+    if (node?.tagName === 'p') {
       if (hasSingleChildElement(node)) {
         if (matchStructure(node, h('p', [h('strong', [h('a')])]))
           || matchStructure(node, h('p', [h('a')]))
@@ -57,7 +57,7 @@ const button = {
         }
       }
     }
-    if (node.tagName === 'a') return true;
+    if (node?.tagName === 'a') return true;
     return false;
   },
   getAttributes: (node) => {

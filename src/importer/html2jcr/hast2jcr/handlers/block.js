@@ -233,18 +233,17 @@ function extractProperties(node, id, ctx, mode) {
         }
       }
       properties[field.name] = encodeHtml(toHtml(selection).trim());
-    } else if (field?.component === 'image' || field?.component === 'reference') {
-      const imageNode = select('img', children[idx]);
-      if (imageNode) {
-        properties[field.name] = select('img', children[idx])?.properties?.src;
-        collapseField(field.name, fields, properties, imageNode);
-      } else if (button.use(select('p', children[idx]))) {
-        properties[field.name] = select('a', children[idx])?.properties?.href;
-        collapseField(field.name, fields, properties, select('p', children[idx]));
-      }
     } else {
+      const imageNode = select('img', children[idx]);
+      const linkNode = select('a', children[idx]);
       const headlineNode = select('h1, h2, h3, h4, h5, h6', children[idx]);
-      if (headlineNode) {
+      if (imageNode && isImageField(field, fields)) {
+        properties[field.name] = imageNode.properties?.src;
+        collapseField(field.name, fields, properties, imageNode);
+      } else if (linkNode && isLinkField(field, fields)) {
+        properties[field.name] = linkNode.properties?.href;
+        collapseField(field.name, fields, properties, select('p', children[idx]));
+      } else if (headlineNode) {
         properties[field.name] = toString(select(headlineNode.tagName, children[idx])).trim();
         collapseField(field.name, fields, properties, headlineNode);
       } else {
@@ -325,7 +324,7 @@ function getAttributes(node, ctx) {
 }
 
 function use(node, parents) {
-  return node.tagName === 'div'
+  return node?.tagName === 'div'
     && parents.length > 2
     && parents[parents.length - 2].tagName === 'main'
     && node.properties?.className?.length > 0

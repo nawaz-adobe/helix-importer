@@ -37,10 +37,10 @@ function getImage(node) {
 
 const image = {
   use: (node) => {
-    if (node.tagName === 'img') {
+    if (node?.tagName === 'img') {
       return true;
     }
-    if (node.tagName === 'p') {
+    if (node?.tagName === 'p') {
       if (matchStructure(node, h('p', [h('picture', [h('img')])]))
         || matchStructure(node, h('p', [h('picture', [h('img'), h('em')])]))
         || matchStructure(node, h('p', [h('img')]))
