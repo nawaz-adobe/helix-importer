@@ -128,123 +128,47 @@ function createComponentGroups(fields) {
   return components;
 }
 
-function isHeadlineField(field, fields) {
-  if (field.component === 'text') {
-    const typeField = fields.find((f) => f.name === `${field.name}Type`);
-    const textField = fields.find((f) => f.name === `${field.name}Text`);
-    return typeField && !textField; // that would otherwise be a link
-  }
-  return false;
-}
-
-function isLinkField(field, fields) {
-  // any text field or a any field that has a Text subfield can be a link
-  // TODO: actually any field can be a link but we have to start somewhere
-  return field.component === 'text' || fields.find((f) => f.name === `${field.name}Text`);
-}
-
-function isImageField(field, fields) {
-  // a reference field is usually an image, cusotm fields may as well but need the MimeType subfield
-  return field.component === 'reference' || fields.find((f) => f.name === `${field.name}MimeType`);
-}
-
 function extractGroupProperties(node, group, elements, properties, ctx) {
   const groupFields = group.fields;
   const groupMainFields = getMainFields(groupFields);
-  let remainingFields = groupMainFields;
+  let field = groupMainFields.shift();
 
-  function getSpecificFieldByCondition(value, element, condition) {
-    // parse the additional properties for field collapsing and select the first field
-    // that matches most properties
-    const parsedLinkFields = remainingFields
-      .map((field, index) => ({ field, index }))
-      .filter(({ field }) => condition(field, groupFields))
-      .map(({ field, index }) => ({
-        field,
-        index,
-        properties: {
-          [field.name]: value,
-          ...collapseField(field.name, [...groupFields], element),
-        },
-      }));
-    const rankedParsedLinkFields = parsedLinkFields.sort((a, b) => {
-      const aProps = Object.keys(a.properties).length;
-      const bProps = Object.keys(b.properties).length;
-      if (aProps === bProps) {
-        return a.index - b.index;
-      }
-      return bProps - aProps;
-    });
-    const [firstField] = rankedParsedLinkFields;
-    return firstField;
-  }
-
-  elements.forEach((element) => {
+  while (elements.length > 0 && !!field) {
+    const element = elements.shift();
     const handler = getHandler(element, [node], ctx);
 
     if (handler) {
+      const isNextRichText = field.component === 'richtext';
+      let value;
+
       if (handler.name === 'button') {
-        const href = select('a', element)?.properties?.href;
-        const firstField = getSpecificFieldByCondition(href, element, isLinkField);
-        if (firstField) {
-          properties[firstField.field.name] = encodeHTMLEntities(href);
-          collapseField(firstField.field.name, groupFields, element, properties);
-          remainingFields = remainingFields.slice(firstField.index + 1);
-          return;
-        }
-      }
-      if (handler.name === 'image') {
-        const src = select('img', element)?.properties?.src;
-        const firstField = getSpecificFieldByCondition(src, element, isImageField);
-        if (firstField) {
-          properties[firstField.field.name] = encodeHTMLEntities(src);
-          collapseField(firstField.field.name, groupFields, element, properties);
-          remainingFields = remainingFields.slice(firstField.index + 1);
-          return;
-        }
-      }
-      if (handler.name === 'title') {
-        const text = toString(element).trim();
-        const firstField = getSpecificFieldByCondition(text, element, isHeadlineField);
-        if (firstField) {
-          properties[firstField.field.name] = encodeHTMLEntities(text);
-          collapseField(firstField.field.name, groupFields, element, properties);
-          remainingFields = remainingFields.slice(firstField.index + 1);
-          return;
-        }
+        value = select('a', element)?.properties?.href;
+      } else if (handler.name === 'image') {
+        value = select('img', element)?.properties?.src;
+      } else if (isNextRichText) {
+        value = encodeHtml(toHtml(element).trim());
+        if (value === '&lt;p>&lt;/p>') value = '';
+      } else {
+        value = encodeHTMLEntities(toString(element).trim());
       }
 
-      if (handler.name === 'text') {
-        // fill in the next field
-        // eslint-disable-next-line arrow-body-style
-        const nextField = remainingFields.find((field) => {
-          // ignore heading and image fields. link field is too generic and cannot be skipped here
-          return !isHeadlineField(field, groupFields) && !isImageField(field, groupFields);
-        });
-        if (nextField) {
-          const isNextRichText = nextField.component === 'richtext';
-          let text = isNextRichText
-            ? encodeHtml(toHtml(element).trim())
-            : encodeHTMLEntities(toString(element).trim());
-
-          if (nextField.component === 'multiselect' || nextField.component === 'aem-tag') {
-            text = `[${text.split(',').map((v) => v.trim()).join(',')}]`;
-          }
-
-          if (properties[nextField.name]) {
-            properties[nextField.name] += text;
-          } else {
-            properties[nextField.name] = text;
-          }
-          if (!isNextRichText) {
-            // update remaining fields only if not richtext.
-            // richtext is greedy
-            remainingFields = remainingFields.slice(1);
-          }
+      if (value !== '') {
+        if (field.component === 'multiselect' || field.component === 'aem-tag') {
+          value = `[${value.split(',').map((v) => v.trim()).join(',')}]`;
         }
+        if (properties[field.name]) {
+          properties[field.name] += value;
+        } else {
+          properties[field.name] = value;
+        }
+        collapseField(field.name, groupFields, element, properties);
+      }
+
+      if (!isNextRichText || value === '') {
+        field = groupMainFields.shift();
       }
     }
-  });
+  }
 }
 
 function extractProperties(node, id, ctx, mode) {
@@ -291,10 +215,10 @@ function extractProperties(node, id, ctx, mode) {
       const imageNode = select('img', children[idx]);
       const linkNode = select('a', children[idx]);
       const headlineNode = select('h1, h2, h3, h4, h5, h6', children[idx]);
-      if (imageNode && isImageField(field, fields)) {
+      if (imageNode) {
         properties[field.name] = encodeHTMLEntities(imageNode.properties?.src);
         collapseField(field.name, fields, imageNode, properties);
-      } else if (linkNode && isLinkField(field, fields)) {
+      } else if (linkNode) {
         properties[field.name] = encodeHTMLEntities(linkNode.properties?.href);
         collapseField(field.name, fields, select('p', children[idx]), properties);
       } else if (headlineNode) {

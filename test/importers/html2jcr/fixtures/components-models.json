@@ -474,7 +474,7 @@
       },
       {
         "component": "text",
-        "label": "Text",
+        "label": "Link Title",
         "name": "teaser_cta1Title",
         "value": "",
         "valueType": "string"
