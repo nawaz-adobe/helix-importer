@@ -262,7 +262,11 @@ function getBlockItems(node, allowedComponents, ctx) {
         },
       };
     });
-    return parsedComponents.sort((a, b) => Object.entries(b).length - Object.entries(a).length)[0];
+    return parsedComponents.sort((a, b) => {
+      const leftAttributesLen = Object.entries(a.attributes).length;
+      const rightAttributesLen = Object.entries(b.attributes).length;
+      return rightAttributesLen - leftAttributesLen;
+    })[0];
   });
 }
 
