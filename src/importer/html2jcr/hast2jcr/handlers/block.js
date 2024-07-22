@@ -241,6 +241,15 @@ function extractProperties(node, id, ctx, mode) {
   return properties;
 }
 
+function encodePropertiesForJcr(properties) {
+  Object.entries(properties).forEach(([key, value]) => {
+    if (value.startsWith('{')) {
+      properties[key] = `\\${value}`;
+    }
+  });
+  return properties;
+}
+
 function getBlockItems(node, allowedComponents, ctx) {
   if (!allowedComponents.length) {
     return undefined;
@@ -260,7 +269,7 @@ function getBlockItems(node, allowedComponents, ctx) {
           'jcr:primaryType': 'nt:unstructured',
           'sling:resourceType': 'core/franklin/components/block/v1/block/item',
           name,
-          ...properties,
+          ...encodePropertiesForJcr(properties),
         },
       };
     });
@@ -293,7 +302,7 @@ function generateProperties(node, ctx) {
   const properties = {
     name,
     filter: filterId,
-    ...attributes,
+    ...encodePropertiesForJcr(attributes),
   };
 
   return { properties, children: blockItems };
