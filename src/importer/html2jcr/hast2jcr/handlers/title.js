@@ -23,7 +23,7 @@ const title = {
     rt: resourceType,
     'jcr:title': encodeHTMLEntities(getText(node)),
     type: node.tagName,
-    ...getDefaultContentComponentTemplate(ctx.components, resourceType),
+    ...getDefaultContentComponentTemplate(ctx, resourceType),
   }),
   leaf: true,
 };

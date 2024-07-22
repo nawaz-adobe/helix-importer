@@ -66,7 +66,7 @@ const button = {
     return false;
   },
   getAttributes: (node, ctx) => {
-    const defaultTemplate = getDefaultContentComponentTemplate(ctx.components, resourceType);
+    const defaultTemplate = getDefaultContentComponentTemplate(ctx, resourceType);
     const type = getType(node);
     const { href, text, title } = getLink(node);
     return {

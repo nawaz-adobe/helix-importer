@@ -58,7 +58,7 @@ const image = {
       alt,
       ...(title !== '' ? { title } : {}),
       fileReference,
-      ...getDefaultContentComponentTemplate(ctx.components, resourceType),
+      ...getDefaultContentComponentTemplate(ctx, resourceType),
     };
   },
   leaf: true,

@@ -62,7 +62,7 @@ const text = {
   getAttributes: (node, ctx) => ({
     rt: resourceType,
     text: getRichText(node),
-    ...getDefaultContentComponentTemplate(ctx.components, resourceType),
+    ...getDefaultContentComponentTemplate(ctx, resourceType),
   }),
   insert: (parent, nodeName, component) => {
     const elements = parent.elements || [];
