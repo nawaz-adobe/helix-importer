@@ -143,8 +143,10 @@ function extractGroupProperties(node, group, elements, properties, ctx) {
 
       if (handler.name === 'button') {
         value = select('a', element)?.properties?.href;
+        if (value) value = encodeHTMLEntities(value);
       } else if (handler.name === 'image') {
         value = select('img', element)?.properties?.src;
+        if (value) value = encodeHTMLEntities(value);
       } else if (isNextRichText) {
         value = encodeHtml(toHtml(element).trim());
         if (value === '&lt;p>&lt;/p>') value = '';
