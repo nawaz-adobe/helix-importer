@@ -63,6 +63,21 @@ export function findMatchingPath(obj, path) {
   return search(obj, '');
 }
 
+export function getDefaultContentComponentTemplate(components, rt) {
+  const groups = components?.componentDefinition?.groups || [];
+  const defaultContentGroup = groups.find(({ id }) => id === 'default');
+  const buttonCmp = (defaultContentGroup?.components || [])
+    .find((cmp) => cmp.plugins?.xwalk?.page?.resourceType === rt);
+
+  if (buttonCmp) {
+    return {
+      ...buttonCmp.plugins.xwalk.page.template,
+    };
+  }
+
+  return {};
+}
+
 export function insertComponent(parent, nodeName, component) {
   const elements = parent.elements || [];
   const {

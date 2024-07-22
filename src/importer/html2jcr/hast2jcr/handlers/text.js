@@ -13,6 +13,7 @@ import { toHtml } from 'hast-util-to-html';
 import { h } from 'hastscript';
 import {
   hasSingleChildElement, encodeHTMLEntities, insertComponent, matchStructure,
+  getDefaultContentComponentTemplate,
 } from '../utils.js';
 
 const resourceType = 'core/franklin/components/text/v1/text';
@@ -58,9 +59,10 @@ const text = {
     }
     return false;
   },
-  getAttributes: (node) => ({
+  getAttributes: (node, ctx) => ({
     rt: resourceType,
     text: getRichText(node),
+    ...getDefaultContentComponentTemplate(ctx.components, resourceType),
   }),
   insert: (parent, nodeName, component) => {
     const elements = parent.elements || [];

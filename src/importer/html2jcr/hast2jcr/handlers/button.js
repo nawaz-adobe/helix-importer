@@ -10,7 +10,12 @@
  * governing permissions and limitations under the License.
  */
 import { h } from 'hastscript';
-import { matchStructure, hasSingleChildElement, encodeHTMLEntities } from '../utils.js';
+import {
+  matchStructure,
+  hasSingleChildElement,
+  encodeHTMLEntities,
+  getDefaultContentComponentTemplate,
+} from '../utils.js';
 
 const resourceType = 'core/franklin/components/button/v1/button';
 
@@ -60,7 +65,8 @@ const button = {
     if (node?.tagName === 'a') return true;
     return false;
   },
-  getAttributes: (node) => {
+  getAttributes: (node, ctx) => {
+    const defaultTemplate = getDefaultContentComponentTemplate(ctx.components, resourceType);
     const type = getType(node);
     const { href, text, title } = getLink(node);
     return {
@@ -69,6 +75,7 @@ const button = {
       href,
       text,
       title,
+      ...defaultTemplate,
     };
   },
   leaf: true,

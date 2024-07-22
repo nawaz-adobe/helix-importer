@@ -9,7 +9,9 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-import { encodeHTMLEntities } from '../utils.js';
+import { encodeHTMLEntities, getDefaultContentComponentTemplate } from '../utils.js';
+
+const resourceType = 'core/franklin/components/title/v1/title';
 
 function getText(node) {
   return node.children.map((child) => child.value).join('');
@@ -17,10 +19,11 @@ function getText(node) {
 
 const title = {
   use: (node) => node?.tagName.match(/h[1-6]/),
-  getAttributes: (node) => ({
-    rt: 'core/franklin/components/title/v1/title',
+  getAttributes: (node, ctx) => ({
+    rt: resourceType,
     'jcr:title': encodeHTMLEntities(getText(node)),
     type: node.tagName,
+    ...getDefaultContentComponentTemplate(ctx.components, resourceType),
   }),
   leaf: true,
 };

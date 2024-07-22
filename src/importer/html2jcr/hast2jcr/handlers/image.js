@@ -11,7 +11,7 @@
  */
 import { select } from 'unist-util-select';
 import { h } from 'hastscript';
-import { encodeHTMLEntities, matchStructure } from '../utils.js';
+import { encodeHTMLEntities, getDefaultContentComponentTemplate, matchStructure } from '../utils.js';
 
 const resourceType = 'core/franklin/components/image/v1/image';
 
@@ -51,13 +51,14 @@ const image = {
     }
     return false;
   },
-  getAttributes: (node) => {
+  getAttributes: (node, ctx) => {
     const { alt, title, src: fileReference } = getImage(node);
     return {
       rt: resourceType,
       alt,
       ...(title !== '' ? { title } : {}),
       fileReference,
+      ...getDefaultContentComponentTemplate(ctx.components, resourceType),
     };
   },
   leaf: true,
