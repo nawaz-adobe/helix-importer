@@ -44,6 +44,21 @@ function getNodeName(name, path, { componentTree }) {
   const index = componentTree(`${path}/${name}`);
   return (index === 0) ? name : `${name}_${index - 1}`;
 }
+
+function encodePropertiesForJcr(properties) {
+  if (Array.isArray(properties)) {
+    properties.forEach((el) => encodePropertiesForJcr(el));
+  }
+  Object.entries(properties).forEach(([key, value]) => {
+    if (typeof value === 'object') {
+      encodePropertiesForJcr(value);
+    } else if (typeof value === 'string' && value.startsWith('{')) {
+      // eslint-disable-next-line no-param-reassign
+      properties[key] = `\\${value}`;
+    }
+  });
+}
+
 export default async function hast2jcr(hast, opts = {}) {
   if (opts.componentModels) {
     // eslint-disable-next-line no-param-reassign
@@ -98,6 +113,8 @@ export default async function hast2jcr(hast, opts = {}) {
     ignoreComment: true,
     spaces: 4,
   };
+
+  encodePropertiesForJcr(json);
 
   return convert.json2xml(json, options);
 }
