@@ -50,11 +50,17 @@ function encodePropertiesForJcr(properties) {
     properties.forEach((el) => encodePropertiesForJcr(el));
   }
   Object.entries(properties).forEach(([key, value]) => {
-    if (typeof value === 'object') {
-      encodePropertiesForJcr(value);
-    } else if (typeof value === 'string' && value.startsWith('{')) {
+    if (value) {
+      if (typeof value === 'object') {
+        encodePropertiesForJcr(value);
+      } else if (typeof value === 'string' && value.startsWith('{')) {
+        // eslint-disable-next-line no-param-reassign
+        properties[key] = `\\${value}`;
+      }
+    } else {
+      // remove any nullish values
       // eslint-disable-next-line no-param-reassign
-      properties[key] = `\\${value}`;
+      delete properties[key];
     }
   });
 }
