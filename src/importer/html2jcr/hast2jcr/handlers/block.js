@@ -149,9 +149,12 @@ function extractGroupProperties(node, group, elements, properties, ctx) {
         if (value) value = encodeHTMLEntities(value);
       } else if (isNextRichText) {
         value = encodeHtml(toHtml(element).trim());
-        if (value === '&lt;p>&lt;/p>') value = '';
+        // <p>&nbsp;</p>
+        if (value === '&lt;p>&amp;#x26;nbsp;&lt;/p>' || value === '&lt;p>&lt;/p>') value = '';
       } else {
-        value = encodeHTMLEntities(toString(element).trim());
+        value = toString(element).trim();
+        if (value === '&amp;#x26;nbsp;') value = '';
+        value = encodeHTMLEntities(value);
       }
 
       if (value !== '') {
