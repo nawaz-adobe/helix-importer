@@ -51,8 +51,9 @@ const image = {
     }
     return false;
   },
-  getAttributes: (node) => {
+  getAttributes: (node, ctx) => {
     const { alt, title, src: fileReference } = getImage(node);
+    if (fileReference) ctx.images.push(fileReference);
     return {
       rt: resourceType,
       alt,

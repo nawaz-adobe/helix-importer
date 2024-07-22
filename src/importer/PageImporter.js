@@ -74,8 +74,11 @@ export default class PageImporter {
     return this.params.storageHandler.put(docxPath, buffer);
   }
 
-  async convertToJcr(jcrPath, content) {
-    const buffer = await md2jcr(content, this.params.components);
+  async convertToJcr(jcrPath, content, images) {
+    const buffer = await md2jcr(content, {
+      components: this.params.components,
+      images,
+    });
     return this.params.storageHandler.put(jcrPath, buffer);
   }
 
@@ -367,9 +370,12 @@ export default class PageImporter {
 
             if (!this.params.skipJcrFileCreation) {
               const jcrPath = `${res.path}.xml`;
-              await this.convertToJcr(jcrPath, res.content);
+              const images = [];
+              await this.convertToJcr(jcrPath, res.content, images);
               // eslint-disable-next-line no-param-reassign
               entry.jcr = jcrPath;
+              // eslint-disable-next-line no-param-reassign
+              entry.jcrImages = images;
             }
           }
 

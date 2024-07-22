@@ -59,6 +59,7 @@ export default async function hast2jcr(hast, opts = {}) {
     json,
     componentTree,
     pathMap,
+    images: opts.images || [],
     ...opts,
   };
 

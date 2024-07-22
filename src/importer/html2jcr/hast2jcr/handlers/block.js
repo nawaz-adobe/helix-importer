@@ -146,7 +146,10 @@ function extractGroupProperties(node, group, elements, properties, ctx) {
         if (value) value = encodeHTMLEntities(value);
       } else if (handler.name === 'image') {
         value = select('img', element)?.properties?.src;
-        if (value) value = encodeHTMLEntities(value);
+        if (value) {
+          value = encodeHTMLEntities(value);
+          ctx.images.add(value);
+        }
       } else if (isNextRichText) {
         value = encodeHtml(toHtml(element).trim());
         if (value === '&lt;p>&lt;/p>') value = '';
@@ -218,7 +221,12 @@ function extractProperties(node, id, ctx, mode) {
       const linkNode = select('a', children[idx]);
       const headlineNode = select('h1, h2, h3, h4, h5, h6', children[idx]);
       if (imageNode) {
-        properties[field.name] = encodeHTMLEntities(imageNode.properties?.src);
+        let value = imageNode.properties?.src;
+        if (value) {
+          value = encodeHTMLEntities(value);
+          ctx.images.add(value);
+        }
+        properties[field.name] = value;
         collapseField(field.name, fields, imageNode, properties);
       } else if (linkNode) {
         properties[field.name] = encodeHTMLEntities(linkNode.properties?.href);
