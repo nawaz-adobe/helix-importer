@@ -153,7 +153,7 @@ function extractGroupProperties(node, group, elements, properties, ctx) {
         if (value === '&lt;p>&amp;#x26;nbsp;&lt;/p>' || value === '&lt;p>&lt;/p>') value = '';
       } else {
         value = toString(element).trim();
-        if (value === '&amp;#x26;nbsp;') value = '';
+        if (value === '&amp;#x26;nbsp;' || value === '&nbsp;') value = '';
         value = encodeHTMLEntities(value);
       }
 
@@ -234,7 +234,7 @@ function extractProperties(node, id, ctx, mode) {
       } else {
         const selector = mode === 'keyValue' ? 'div > div:nth-last-child(1)' : 'div';
         let value = encodeHTMLEntities(toString(select(selector, children[idx])).trim());
-        if (value === '&amp;#x26;nbsp;') value = '';
+        if (value === '&amp;#x26;nbsp;' || value === '&nbsp;') value = '';
         if (field.component === 'multiselect' || field.component === 'aem-tag') {
           value = `[${value.split(',').map((v) => v.trim()).join(',')}]`;
         }
