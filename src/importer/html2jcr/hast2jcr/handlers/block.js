@@ -17,6 +17,14 @@ import { toHtml } from 'hast-util-to-html';
 import button, { getType } from './button.js';
 import { encodeHTMLEntities, getHandler, findFieldsById } from '../utils.js';
 
+function nameToClassName(name) {
+  return name.toLowerCase()
+    .trim()
+    .replace(/[^0-9a-z]+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+}
+
 function findNameFilterById(componentDefinition, nameClass) {
   let model = null;
   let filterId = null;
@@ -25,11 +33,8 @@ function findNameFilterById(componentDefinition, nameClass) {
   componentDefinition.groups.forEach((group) => {
     group.components.forEach((component) => {
       const templateName = component?.plugins?.xwalk?.page?.template?.name;
-      if (templateName && templateName.toLowerCase()
-        .trim()
-        .replace(/[^0-9a-z]+/g, '-')
-        .replace(/^-+/, '')
-        .replace(/-+$/, '') === nameClass) {
+      if (component.id === nameClass
+        || (templateName && nameToClassName(templateName) === nameClass)) {
         filterId = component?.plugins?.xwalk?.page?.template?.filter;
         model = component?.plugins?.xwalk?.page?.template?.model;
         keyValue = component?.plugins?.xwalk?.page?.template['key-value'] || false;
