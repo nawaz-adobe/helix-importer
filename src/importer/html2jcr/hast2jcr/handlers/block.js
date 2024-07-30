@@ -25,7 +25,7 @@ function nameToClassName(name) {
     .replace(/-+$/, '');
 }
 
-function findNameFilterById(componentDefinition, nameClass) {
+function findNameFilterByNameClass(componentDefinition, nameClass) {
   let model = null;
   let filterId = null;
   let name = null;
@@ -33,12 +33,31 @@ function findNameFilterById(componentDefinition, nameClass) {
   componentDefinition.groups.forEach((group) => {
     group.components.forEach((component) => {
       const templateName = component?.plugins?.xwalk?.page?.template?.name;
-      if (component.id === nameClass
-        || (templateName && nameToClassName(templateName) === nameClass)) {
+      if (templateName && nameToClassName(templateName) === nameClass) {
         filterId = component?.plugins?.xwalk?.page?.template?.filter;
         model = component?.plugins?.xwalk?.page?.template?.model;
         keyValue = component?.plugins?.xwalk?.page?.template['key-value'] || false;
         name = templateName;
+      }
+    });
+  });
+  return {
+    name, filterId, model, keyValue,
+  };
+}
+
+function findNameFilterById(componentDefinition, id) {
+  let model = null;
+  let filterId = null;
+  let name = null;
+  let keyValue = null;
+  componentDefinition.groups.forEach((group) => {
+    group.components.forEach((component) => {
+      if (component?.id === id) {
+        filterId = component?.plugins?.xwalk?.page?.template?.filter;
+        model = component?.plugins?.xwalk?.page?.template?.model;
+        keyValue = component?.plugins?.xwalk?.page?.template['key-value'] || false;
+        name = component?.plugins?.xwalk?.page?.template?.name;
       }
     });
   });
@@ -296,7 +315,7 @@ function generateProperties(node, ctx) {
   }
   const {
     name, model, filterId, keyValue,
-  } = findNameFilterById(componentDefinition, nameClass);
+  } = findNameFilterByNameClass(componentDefinition, nameClass);
   const allowedComponents = filters.find((item) => item.id === filterId)?.components || [];
   const attributes = extractProperties(node, model, ctx, keyValue ? 'keyValue' : 'simple');
   const blockItems = getBlockItems(node, allowedComponents, ctx);
