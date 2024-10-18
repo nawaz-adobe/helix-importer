@@ -23,6 +23,12 @@
     ]
   },
   {
+    "id": "accordion-with-classes",
+    "components": [
+      "accordion-item"
+    ]
+  },
+  {
     "id": "accordion-without-fields",
     "components": [
       "accordion-item"
