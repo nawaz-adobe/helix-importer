@@ -324,6 +324,7 @@ function extractProperties(node, id, ctx, mode) {
       }
     }
   });
+  if (mode === 'keyValue') properties['key-value'] = true;
   if (id) properties.model = id;
   return properties;
 }
